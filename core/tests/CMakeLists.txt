@@ -5,6 +5,7 @@ add_executable(ibridger_tests
   transport/named_pipe_test.cpp
   transport/transport_factory_test.cpp
   protocol/framing_test.cpp
+  protocol/envelope_codec_test.cpp
 )
 
 target_link_libraries(ibridger_tests PRIVATE

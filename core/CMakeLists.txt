@@ -4,6 +4,7 @@ add_library(ibridger_core STATIC
   src/transport/named_pipe_transport.cpp
   src/transport/transport_factory.cpp
   src/protocol/framing.cpp
+  src/protocol/envelope_codec.cpp
 )
 
 target_include_directories(ibridger_core PUBLIC
