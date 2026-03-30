@@ -1,0 +1,11 @@
+add_executable(ibridger_tests
+  sanity_test.cpp
+  proto_test.cpp
+)
+
+target_link_libraries(ibridger_tests PRIVATE
+  ibridger_core
+  GTest::gtest_main
+)
+
+gtest_discover_tests(ibridger_tests)

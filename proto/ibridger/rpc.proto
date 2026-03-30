@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package ibridger;
+
+message Ping {
+  string client_id = 1;
+}
+
+message Pong {
+  string server_id = 1;
+  int64 timestamp_ms = 2;
+}
+
+message ServiceDescriptor {
+  string name = 1;
+  repeated string methods = 2;
+}

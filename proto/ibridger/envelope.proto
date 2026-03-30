@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package ibridger;
+
+enum MessageType {
+  REQUEST = 0;
+  RESPONSE = 1;
+  EVENT = 2;
+  ERROR = 3;
+}
+
+enum StatusCode {
+  OK = 0;
+  UNKNOWN_ERROR = 1;
+  NOT_FOUND = 2;
+  INVALID_ARGUMENT = 3;
+  INTERNAL = 4;
+  TIMEOUT = 5;
+}
+
+message Envelope {
+  MessageType type = 1;
+  uint64 request_id = 2;
+  string service_name = 3;
+  string method_name = 4;
+  bytes payload = 5;
+  StatusCode status = 6;
+  string error_message = 7;
+  map<string, string> metadata = 8;
+}
