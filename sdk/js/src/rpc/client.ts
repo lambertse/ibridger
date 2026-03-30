@@ -41,7 +41,7 @@ export interface ProtoType<T> {
   decode(data: Uint8Array): T;
 }
 
-const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_TIMEOUT_MS = ibridger.WireConstant.DEFAULT_TIMEOUT_MS;
 
 /**
  * High-level RPC client for the iBridger wire protocol.

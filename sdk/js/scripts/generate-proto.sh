@@ -11,6 +11,8 @@ mkdir -p "$OUT_DIR"
 PROTO_FILES=(
   "$PROTO_ROOT/ibridger/envelope.proto"
   "$PROTO_ROOT/ibridger/rpc.proto"
+  "$PROTO_ROOT/ibridger/constants.proto"
+  "$PROTO_ROOT/ibridger/examples/echo.proto"
 )
 
 echo "Generating JS/TS from protos..."

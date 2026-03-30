@@ -7,6 +7,7 @@ endif()
 set(PROTO_FILES
   ibridger/envelope.proto
   ibridger/rpc.proto
+  ibridger/constants.proto
   ibridger/examples/echo.proto
 )
 

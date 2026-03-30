@@ -1,6 +1,7 @@
 import { IConnection, TransportError } from '../transport/types';
+import { ibridger } from '../generated/proto';
 
-const MAX_FRAME_SIZE = 16 * 1024 * 1024; // 16 MB
+const MAX_FRAME_SIZE = ibridger.WireConstant.MAX_FRAME_SIZE;
 
 /**
  * Wraps an IConnection with length-prefixed framing.

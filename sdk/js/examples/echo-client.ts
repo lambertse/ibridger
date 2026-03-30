@@ -1,5 +1,5 @@
 /**
- * echo-client.ts — Connect to the C++ echo server, send an EchoRequest,
+ * echo-client.ts — Connect to the JS echo server, send an EchoRequest,
  * and print the uppercased response.
  *
  * Usage:
@@ -8,8 +8,8 @@
  * Default socket path : /tmp/ibridger_echo.sock
  * Default message     : hello from JS
  *
- * The server must expose an "EchoService/Echo" method that accepts an
- * ibridger.examples.EchoRequest proto and returns an EchoResponse.
+ * Start the server first:
+ *   npx ts-node examples/echo-server.ts
  */
 
 import { IBridgerClient, ProtoType } from '../src/rpc/client';
@@ -18,36 +18,12 @@ import { ibridger } from '../src/generated/proto';
 const endpoint = process.argv[2] ?? '/tmp/ibridger_echo.sock';
 const message  = process.argv[3] ?? 'hello from JS';
 
-// ─── Minimal proto descriptors for EchoRequest / EchoResponse ─────────────────
-//
-// The echo.proto lives in proto/ibridger/examples/echo.proto.
-// Rather than adding a full code-gen step for examples, we encode/decode
-// EchoRequest { string message = 1 } and EchoResponse { string message = 1,
-// int64 timestamp_ms = 2 } manually using protobufjs reflection.
-
-import * as protobuf from 'protobufjs';
-import * as path from 'path';
-
-async function loadEchoTypes(): Promise<{
-  EchoRequest: ProtoType<{ message: string }>;
-  EchoResponse: ProtoType<{ message: string; timestampMs: number | bigint }>;
-}> {
-  const protoPath = path.resolve(
-    __dirname,
-    '../../../proto/ibridger/examples/echo.proto',
-  );
-  const root = await protobuf.load(protoPath);
-  const EchoRequest  = root.lookupType('ibridger.examples.EchoRequest');
-  const EchoResponse = root.lookupType('ibridger.examples.EchoResponse');
-  return {
-    EchoRequest:  EchoRequest  as unknown as ProtoType<{ message: string }>,
-    EchoResponse: EchoResponse as unknown as ProtoType<{ message: string; timestampMs: number | bigint }>,
-  };
-}
+type EchoRequest  = ibridger.examples.EchoRequest;
+type EchoResponse = ibridger.examples.EchoResponse;
+const EchoRequest  = ibridger.examples.EchoRequest  as unknown as ProtoType<EchoRequest>;
+const EchoResponse = ibridger.examples.EchoResponse as unknown as ProtoType<EchoResponse>;
 
 async function main() {
-  const { EchoRequest, EchoResponse } = await loadEchoTypes();
-
   const client = new IBridgerClient({ endpoint });
   console.log(`Connecting to ${endpoint} ...`);
   await client.connect();
@@ -56,10 +32,10 @@ async function main() {
   console.log(`Sending : "${message}"`);
   const t0 = Date.now();
 
-  const response = await client.call(
+  const response = await client.call<EchoRequest, EchoResponse>(
     'EchoService',
     'Echo',
-    { message },
+    ibridger.examples.EchoRequest.create({ message }),
     EchoRequest,
     EchoResponse,
   );

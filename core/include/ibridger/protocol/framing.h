@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ibridger/transport/connection.h"
+#include "ibridger/constants.pb.h"
 
 #include <memory>
 #include <string>
@@ -10,8 +11,9 @@
 namespace ibridger {
 namespace protocol {
 
-/// Maximum allowed payload size per frame: 16 MB.
-constexpr size_t kMaxFrameSize = 16u * 1024u * 1024u;
+/// Maximum allowed payload size per frame — sourced from constants.proto so
+/// all SDK implementations share a single canonical value.
+constexpr size_t kMaxFrameSize = static_cast<size_t>(ibridger::MAX_FRAME_SIZE);
 
 /// Wraps an `IConnection` with length-prefixed framing.
 ///

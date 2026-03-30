@@ -6,6 +6,12 @@ namespace ibridger {
 namespace rpc {
 namespace builtin {
 
+/// Canonical server_id returned in every Pong response.
+/// Documented in proto/ibridger/constants.proto and enforced by cross-language tests.
+constexpr const char* kPingServerId    = "ibridger-server";
+constexpr const char* kPingServiceName = "ibridger.Ping";
+constexpr const char* kPingMethodName  = "Ping";
+
 /// Built-in health-check service.
 ///
 /// Service name : "ibridger.Ping"

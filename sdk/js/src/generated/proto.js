@@ -1252,6 +1252,482 @@
             return ServiceDescriptor;
         })();
     
+        /**
+         * WireConstant enum.
+         * @name ibridger.WireConstant
+         * @enum {number}
+         * @property {number} WIRE_CONSTANT_UNSPECIFIED=0 WIRE_CONSTANT_UNSPECIFIED value
+         * @property {number} MAX_FRAME_SIZE=16777216 MAX_FRAME_SIZE value
+         * @property {number} DEFAULT_TIMEOUT_MS=30000 DEFAULT_TIMEOUT_MS value
+         */
+        ibridger.WireConstant = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "WIRE_CONSTANT_UNSPECIFIED"] = 0;
+            values[valuesById[16777216] = "MAX_FRAME_SIZE"] = 16777216;
+            values[valuesById[30000] = "DEFAULT_TIMEOUT_MS"] = 30000;
+            return values;
+        })();
+    
+        ibridger.examples = (function() {
+    
+            /**
+             * Namespace examples.
+             * @memberof ibridger
+             * @namespace
+             */
+            var examples = {};
+    
+            examples.EchoRequest = (function() {
+    
+                /**
+                 * Properties of an EchoRequest.
+                 * @memberof ibridger.examples
+                 * @interface IEchoRequest
+                 * @property {string|null} [message] EchoRequest message
+                 */
+    
+                /**
+                 * Constructs a new EchoRequest.
+                 * @memberof ibridger.examples
+                 * @classdesc Represents an EchoRequest.
+                 * @implements IEchoRequest
+                 * @constructor
+                 * @param {ibridger.examples.IEchoRequest=} [properties] Properties to set
+                 */
+                function EchoRequest(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+    
+                /**
+                 * EchoRequest message.
+                 * @member {string} message
+                 * @memberof ibridger.examples.EchoRequest
+                 * @instance
+                 */
+                EchoRequest.prototype.message = "";
+    
+                /**
+                 * Creates a new EchoRequest instance using the specified properties.
+                 * @function create
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {ibridger.examples.IEchoRequest=} [properties] Properties to set
+                 * @returns {ibridger.examples.EchoRequest} EchoRequest instance
+                 */
+                EchoRequest.create = function create(properties) {
+                    return new EchoRequest(properties);
+                };
+    
+                /**
+                 * Encodes the specified EchoRequest message. Does not implicitly {@link ibridger.examples.EchoRequest.verify|verify} messages.
+                 * @function encode
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {ibridger.examples.IEchoRequest} message EchoRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                EchoRequest.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.message);
+                    return writer;
+                };
+    
+                /**
+                 * Encodes the specified EchoRequest message, length delimited. Does not implicitly {@link ibridger.examples.EchoRequest.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {ibridger.examples.IEchoRequest} message EchoRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                EchoRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+    
+                /**
+                 * Decodes an EchoRequest message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {ibridger.examples.EchoRequest} EchoRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                EchoRequest.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ibridger.examples.EchoRequest();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.message = reader.string();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Decodes an EchoRequest message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {ibridger.examples.EchoRequest} EchoRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                EchoRequest.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+    
+                /**
+                 * Verifies an EchoRequest message.
+                 * @function verify
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                EchoRequest.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.message != null && message.hasOwnProperty("message"))
+                        if (!$util.isString(message.message))
+                            return "message: string expected";
+                    return null;
+                };
+    
+                /**
+                 * Creates an EchoRequest message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {ibridger.examples.EchoRequest} EchoRequest
+                 */
+                EchoRequest.fromObject = function fromObject(object) {
+                    if (object instanceof $root.ibridger.examples.EchoRequest)
+                        return object;
+                    var message = new $root.ibridger.examples.EchoRequest();
+                    if (object.message != null)
+                        message.message = String(object.message);
+                    return message;
+                };
+    
+                /**
+                 * Creates a plain object from an EchoRequest message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {ibridger.examples.EchoRequest} message EchoRequest
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                EchoRequest.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults)
+                        object.message = "";
+                    if (message.message != null && message.hasOwnProperty("message"))
+                        object.message = message.message;
+                    return object;
+                };
+    
+                /**
+                 * Converts this EchoRequest to JSON.
+                 * @function toJSON
+                 * @memberof ibridger.examples.EchoRequest
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                EchoRequest.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+    
+                /**
+                 * Gets the default type url for EchoRequest
+                 * @function getTypeUrl
+                 * @memberof ibridger.examples.EchoRequest
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                EchoRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/ibridger.examples.EchoRequest";
+                };
+    
+                return EchoRequest;
+            })();
+    
+            examples.EchoResponse = (function() {
+    
+                /**
+                 * Properties of an EchoResponse.
+                 * @memberof ibridger.examples
+                 * @interface IEchoResponse
+                 * @property {string|null} [message] EchoResponse message
+                 * @property {Long|null} [timestampMs] EchoResponse timestampMs
+                 */
+    
+                /**
+                 * Constructs a new EchoResponse.
+                 * @memberof ibridger.examples
+                 * @classdesc Represents an EchoResponse.
+                 * @implements IEchoResponse
+                 * @constructor
+                 * @param {ibridger.examples.IEchoResponse=} [properties] Properties to set
+                 */
+                function EchoResponse(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+    
+                /**
+                 * EchoResponse message.
+                 * @member {string} message
+                 * @memberof ibridger.examples.EchoResponse
+                 * @instance
+                 */
+                EchoResponse.prototype.message = "";
+    
+                /**
+                 * EchoResponse timestampMs.
+                 * @member {Long} timestampMs
+                 * @memberof ibridger.examples.EchoResponse
+                 * @instance
+                 */
+                EchoResponse.prototype.timestampMs = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                /**
+                 * Creates a new EchoResponse instance using the specified properties.
+                 * @function create
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {ibridger.examples.IEchoResponse=} [properties] Properties to set
+                 * @returns {ibridger.examples.EchoResponse} EchoResponse instance
+                 */
+                EchoResponse.create = function create(properties) {
+                    return new EchoResponse(properties);
+                };
+    
+                /**
+                 * Encodes the specified EchoResponse message. Does not implicitly {@link ibridger.examples.EchoResponse.verify|verify} messages.
+                 * @function encode
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {ibridger.examples.IEchoResponse} message EchoResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                EchoResponse.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.message);
+                    if (message.timestampMs != null && Object.hasOwnProperty.call(message, "timestampMs"))
+                        writer.uint32(/* id 2, wireType 0 =*/16).int64(message.timestampMs);
+                    return writer;
+                };
+    
+                /**
+                 * Encodes the specified EchoResponse message, length delimited. Does not implicitly {@link ibridger.examples.EchoResponse.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {ibridger.examples.IEchoResponse} message EchoResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                EchoResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+    
+                /**
+                 * Decodes an EchoResponse message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {ibridger.examples.EchoResponse} EchoResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                EchoResponse.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ibridger.examples.EchoResponse();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.message = reader.string();
+                                break;
+                            }
+                        case 2: {
+                                message.timestampMs = reader.int64();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Decodes an EchoResponse message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {ibridger.examples.EchoResponse} EchoResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                EchoResponse.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+    
+                /**
+                 * Verifies an EchoResponse message.
+                 * @function verify
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                EchoResponse.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.message != null && message.hasOwnProperty("message"))
+                        if (!$util.isString(message.message))
+                            return "message: string expected";
+                    if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
+                        if (!$util.isInteger(message.timestampMs) && !(message.timestampMs && $util.isInteger(message.timestampMs.low) && $util.isInteger(message.timestampMs.high)))
+                            return "timestampMs: integer|Long expected";
+                    return null;
+                };
+    
+                /**
+                 * Creates an EchoResponse message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {ibridger.examples.EchoResponse} EchoResponse
+                 */
+                EchoResponse.fromObject = function fromObject(object) {
+                    if (object instanceof $root.ibridger.examples.EchoResponse)
+                        return object;
+                    var message = new $root.ibridger.examples.EchoResponse();
+                    if (object.message != null)
+                        message.message = String(object.message);
+                    if (object.timestampMs != null)
+                        if ($util.Long)
+                            (message.timestampMs = $util.Long.fromValue(object.timestampMs)).unsigned = false;
+                        else if (typeof object.timestampMs === "string")
+                            message.timestampMs = parseInt(object.timestampMs, 10);
+                        else if (typeof object.timestampMs === "number")
+                            message.timestampMs = object.timestampMs;
+                        else if (typeof object.timestampMs === "object")
+                            message.timestampMs = new $util.LongBits(object.timestampMs.low >>> 0, object.timestampMs.high >>> 0).toNumber();
+                    return message;
+                };
+    
+                /**
+                 * Creates a plain object from an EchoResponse message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {ibridger.examples.EchoResponse} message EchoResponse
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                EchoResponse.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.message = "";
+                        if ($util.Long) {
+                            var long = new $util.Long(0, 0, false);
+                            object.timestampMs = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                        } else
+                            object.timestampMs = options.longs === String ? "0" : 0;
+                    }
+                    if (message.message != null && message.hasOwnProperty("message"))
+                        object.message = message.message;
+                    if (message.timestampMs != null && message.hasOwnProperty("timestampMs"))
+                        if (typeof message.timestampMs === "number")
+                            object.timestampMs = options.longs === String ? String(message.timestampMs) : message.timestampMs;
+                        else
+                            object.timestampMs = options.longs === String ? $util.Long.prototype.toString.call(message.timestampMs) : options.longs === Number ? new $util.LongBits(message.timestampMs.low >>> 0, message.timestampMs.high >>> 0).toNumber() : message.timestampMs;
+                    return object;
+                };
+    
+                /**
+                 * Converts this EchoResponse to JSON.
+                 * @function toJSON
+                 * @memberof ibridger.examples.EchoResponse
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                EchoResponse.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+    
+                /**
+                 * Gets the default type url for EchoResponse
+                 * @function getTypeUrl
+                 * @memberof ibridger.examples.EchoResponse
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                EchoResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/ibridger.examples.EchoResponse";
+                };
+    
+                return EchoResponse;
+            })();
+    
+            return examples;
+        })();
+    
         return ibridger;
     })();
 

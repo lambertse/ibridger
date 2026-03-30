@@ -462,4 +462,215 @@ export namespace ibridger {
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
+
+    /** WireConstant enum. */
+    enum WireConstant {
+        WIRE_CONSTANT_UNSPECIFIED = 0,
+        MAX_FRAME_SIZE = 16777216,
+        DEFAULT_TIMEOUT_MS = 30000
+    }
+
+    /** Namespace examples. */
+    namespace examples {
+
+        /** Properties of an EchoRequest. */
+        interface IEchoRequest {
+
+            /** EchoRequest message */
+            message?: (string|null);
+        }
+
+        /** Represents an EchoRequest. */
+        class EchoRequest implements IEchoRequest {
+
+            /**
+             * Constructs a new EchoRequest.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: ibridger.examples.IEchoRequest);
+
+            /** EchoRequest message. */
+            public message: string;
+
+            /**
+             * Creates a new EchoRequest instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns EchoRequest instance
+             */
+            public static create(properties?: ibridger.examples.IEchoRequest): ibridger.examples.EchoRequest;
+
+            /**
+             * Encodes the specified EchoRequest message. Does not implicitly {@link ibridger.examples.EchoRequest.verify|verify} messages.
+             * @param message EchoRequest message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: ibridger.examples.IEchoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified EchoRequest message, length delimited. Does not implicitly {@link ibridger.examples.EchoRequest.verify|verify} messages.
+             * @param message EchoRequest message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: ibridger.examples.IEchoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes an EchoRequest message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns EchoRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ibridger.examples.EchoRequest;
+
+            /**
+             * Decodes an EchoRequest message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns EchoRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ibridger.examples.EchoRequest;
+
+            /**
+             * Verifies an EchoRequest message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates an EchoRequest message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns EchoRequest
+             */
+            public static fromObject(object: { [k: string]: any }): ibridger.examples.EchoRequest;
+
+            /**
+             * Creates a plain object from an EchoRequest message. Also converts values to other types if specified.
+             * @param message EchoRequest
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: ibridger.examples.EchoRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this EchoRequest to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for EchoRequest
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        /** Properties of an EchoResponse. */
+        interface IEchoResponse {
+
+            /** EchoResponse message */
+            message?: (string|null);
+
+            /** EchoResponse timestampMs */
+            timestampMs?: (Long|null);
+        }
+
+        /** Represents an EchoResponse. */
+        class EchoResponse implements IEchoResponse {
+
+            /**
+             * Constructs a new EchoResponse.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: ibridger.examples.IEchoResponse);
+
+            /** EchoResponse message. */
+            public message: string;
+
+            /** EchoResponse timestampMs. */
+            public timestampMs: Long;
+
+            /**
+             * Creates a new EchoResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns EchoResponse instance
+             */
+            public static create(properties?: ibridger.examples.IEchoResponse): ibridger.examples.EchoResponse;
+
+            /**
+             * Encodes the specified EchoResponse message. Does not implicitly {@link ibridger.examples.EchoResponse.verify|verify} messages.
+             * @param message EchoResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: ibridger.examples.IEchoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified EchoResponse message, length delimited. Does not implicitly {@link ibridger.examples.EchoResponse.verify|verify} messages.
+             * @param message EchoResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: ibridger.examples.IEchoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes an EchoResponse message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns EchoResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ibridger.examples.EchoResponse;
+
+            /**
+             * Decodes an EchoResponse message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns EchoResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ibridger.examples.EchoResponse;
+
+            /**
+             * Verifies an EchoResponse message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates an EchoResponse message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns EchoResponse
+             */
+            public static fromObject(object: { [k: string]: any }): ibridger.examples.EchoResponse;
+
+            /**
+             * Creates a plain object from an EchoResponse message. Also converts values to other types if specified.
+             * @param message EchoResponse
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: ibridger.examples.EchoResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this EchoResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for EchoResponse
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+    }
 }

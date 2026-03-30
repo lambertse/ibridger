@@ -1,5 +1,6 @@
 #include "ibridger/rpc/builtin/ping_service.h"
 #include "ibridger/rpc.pb.h"
+#include "ibridger/constants.pb.h"
 
 #include <chrono>
 
@@ -8,7 +9,7 @@ namespace rpc {
 namespace builtin {
 
 std::string PingService::name() const {
-    return "ibridger.Ping";
+    return kPingServiceName;
 }
 
 std::vector<std::string> PingService::methods() const {
@@ -16,7 +17,7 @@ std::vector<std::string> PingService::methods() const {
 }
 
 MethodHandler PingService::get_method(const std::string& method) const {
-    if (method != "Ping") return nullptr;
+    if (method != kPingMethodName) return nullptr;
 
     return [](const std::string& payload) -> std::pair<std::string, std::error_code> {
         ibridger::Ping ping;
@@ -28,7 +29,7 @@ MethodHandler PingService::get_method(const std::string& method) const {
             std::chrono::system_clock::now().time_since_epoch()).count();
 
         ibridger::Pong pong;
-        pong.set_server_id("ibridger-server");
+        pong.set_server_id(kPingServerId);
         pong.set_timestamp_ms(static_cast<int64_t>(now_ms));
 
         std::string out;

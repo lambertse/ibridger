@@ -4,6 +4,7 @@
 #include "ibridger/protocol/framing.h"
 #include "ibridger/protocol/envelope_codec.h"
 #include "ibridger/envelope.pb.h"
+#include "ibridger/constants.pb.h"
 
 #include <atomic>
 #include <chrono>
@@ -19,7 +20,7 @@ namespace rpc {
 struct ClientConfig {
     std::string endpoint;
     transport::TransportType transport = transport::TransportType::kAuto;
-    std::chrono::seconds timeout{30};
+    std::chrono::milliseconds timeout{ibridger::DEFAULT_TIMEOUT_MS};
 };
 
 /// Synchronous RPC client.

@@ -6,6 +6,9 @@
  *   npx ts-node examples/ping-client.ts [socket-path]
  *
  * Default socket path: /tmp/ibridger_echo.sock
+ *
+ * Start the server first:
+ *   npx ts-node examples/echo-server.ts
  */
 
 import { IBridgerClient } from '../src/rpc/client';

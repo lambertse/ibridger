@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package ibridger;
+
+// ─── Numeric wire constants ───────────────────────────────────────────────────
+//
+// Every SDK implementation MUST read these values from generated code rather
+// than hardcoding them independently. Changing a value here automatically
+// propagates to all languages on the next `generate-proto` run.
+//
+// Use in C++ : ibridger::MAX_FRAME_SIZE
+// Use in JS  : ibridger.WireConstant.MAX_FRAME_SIZE
+enum WireConstant {
+  WIRE_CONSTANT_UNSPECIFIED = 0;
+
+  // Maximum frame payload in bytes (16 MiB).
+  // Both sender and receiver MUST reject frames that exceed this limit.
+  MAX_FRAME_SIZE = 16777216;
+
+  // Default RPC call timeout in milliseconds (30 s).
+  // Used when no per-call timeout is specified.
+  DEFAULT_TIMEOUT_MS = 30000;
+}
+
+// ─── String constants (documented here, enforced by WIRE_PROTOCOL.md) ────────
+//
+// These cannot be expressed as proto3 enum values.  They are canonical here
+// via comments; the integration tests in Phase 22 enforce the actual values.
+//
+//   PING_SERVICE_NAME = "ibridger.Ping"
+//     Service name of the built-in health-check service.
+//
+//   PING_METHOD_NAME  = "Ping"
+//     The single method exposed by the Ping service.
+//
+//   PING_SERVER_ID    = "ibridger-server"
+//     The server_id field returned in every Pong response.
+//
+// Any SDK that changes these strings will fail the cross-language tests.
