@@ -30,6 +30,106 @@
 
 ---
 
+## Message Flow
+
+End-to-end path of a single RPC call (client → server → client):
+
+```
+CLIENT SIDE                              SERVER SIDE
+───────────────────────────────────────────────────────────────────────
+
+User code
+  │  call("EchoService", "Echo", req)
+  ▼
+ClientStub
+  │  serialize TReq → bytes
+  │  build Envelope {
+  │    type=REQUEST, request_id=42,
+  │    service_name="EchoService",
+  │    method_name="Echo", payload=<bytes>
+  │  }
+  ▼
+EnvelopeCodec
+  │  Envelope.SerializeToString() → raw bytes
+  ▼
+FramedConnection
+  │  prepend [4-byte BE length] → framed bytes
+  ▼
+IConnection (UnixSocketConnection)
+  │  ::write() to socket fd
+  │
+  │   ═══════ Unix socket / Named pipe ═══════>
+  │
+  │                              IConnection (UnixSocketConnection)
+  │                                       │  ::read() from socket fd
+  │                                       ▼
+  │                              FramedConnection
+  │                                       │  read 4-byte length
+  │                                       │  read exactly N bytes → raw bytes
+  │                                       ▼
+  │                              EnvelopeCodec
+  │                                       │  Envelope.ParseFromString() → Envelope
+  │                                       ▼
+  │                              Dispatcher
+  │                                       │  lookup service_name
+  │                                       ▼
+  │                              ServiceRegistry
+  │                                       │  find_service("EchoService")
+  │                                       ▼
+  │                              IService (EchoService)
+  │                                       │  get_method("Echo") → MethodHandler
+  │                                       ▼
+  │                              MethodHandler
+  │                                       │  handler(payload) → resp bytes
+  │                                       ▼
+  │                              Dispatcher
+  │                                       │  build Envelope {
+  │                                       │    type=RESPONSE, request_id=42,
+  │                                       │    payload=<resp bytes>
+  │                                       │  }
+  │                                       ▼
+  │                              EnvelopeCodec
+  │                                       │  SerializeToString() → raw bytes
+  │                                       ▼
+  │                              FramedConnection
+  │                                       │  prepend [4-byte BE length]
+  │                                       ▼
+  │                              IConnection
+  │                                       │  ::write() to socket fd
+  │
+  │   <══════ Unix socket / Named pipe ═══════
+  │
+IConnection (UnixSocketConnection)
+  │  ::read() from socket fd
+  ▼
+FramedConnection
+  │  strip 4-byte length, read N bytes
+  ▼
+EnvelopeCodec
+  │  ParseFromString() → Envelope
+  ▼
+ClientStub
+  │  validate request_id == 42
+  │  check status == OK
+  │  deserialize payload → TResp
+  ▼
+User code
+  ← TResp (EchoResponse)
+```
+
+**Object responsibilities at each layer:**
+
+| Layer | Object | Responsibility |
+|-------|--------|----------------|
+| SDK | `ClientStub` / `IService` | Typed proto serialization, user-facing API |
+| RPC | `Dispatcher`, `ServiceRegistry` | Routing, request/response correlation |
+| Protocol | `EnvelopeCodec` | Protobuf marshal / unmarshal |
+| Protocol | `FramedConnection` | `[4-byte BE len][payload]` framing |
+| Transport | `IConnection` | Raw byte stream (`read` / `write`) |
+| Transport | `ITransport` | Endpoint lifecycle (`listen` / `accept` / `connect`) |
+
+---
+
 ## Phase 1: Repository Scaffolding
 
 **Goal:** Establish directory layout, root CMakeLists.txt, .gitignore.

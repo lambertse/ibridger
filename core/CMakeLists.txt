@@ -3,6 +3,7 @@ add_library(ibridger_core STATIC
   src/transport/unix_socket_transport.cpp
   src/transport/named_pipe_transport.cpp
   src/transport/transport_factory.cpp
+  src/protocol/framing.cpp
 )
 
 target_include_directories(ibridger_core PUBLIC
