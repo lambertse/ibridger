@@ -5,6 +5,8 @@ add_library(ibridger_core STATIC
   src/transport/transport_factory.cpp
   src/protocol/framing.cpp
   src/protocol/envelope_codec.cpp
+  src/rpc/service_registry.cpp
+  src/rpc/dispatcher.cpp
 )
 
 target_include_directories(ibridger_core PUBLIC

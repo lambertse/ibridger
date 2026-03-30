@@ -6,6 +6,8 @@ add_executable(ibridger_tests
   transport/transport_factory_test.cpp
   protocol/framing_test.cpp
   protocol/envelope_codec_test.cpp
+  rpc/service_registry_test.cpp
+  rpc/dispatcher_test.cpp
 )
 
 target_link_libraries(ibridger_tests PRIVATE
