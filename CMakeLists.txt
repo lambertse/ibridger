@@ -18,3 +18,30 @@ include(cmake/Dependencies.cmake)
 add_subdirectory(proto)
 add_subdirectory(core)
 add_subdirectory(sdk/cpp)
+
+# ─── CMake package install ────────────────────────────────────────────────────
+include(CMakePackageConfigHelpers)
+
+install(EXPORT ibridger-targets
+  FILE        ibridgerTargets.cmake
+  NAMESPACE   ibridger::
+  DESTINATION lib/cmake/ibridger
+)
+
+configure_package_config_file(
+  cmake/ibridgerConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ibridgerConfig.cmake
+  INSTALL_DESTINATION lib/cmake/ibridger
+)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/ibridgerConfigVersion.cmake
+  VERSION     ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/ibridgerConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/ibridgerConfigVersion.cmake
+  DESTINATION lib/cmake/ibridger
+)

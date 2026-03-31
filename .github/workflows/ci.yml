@@ -1,5 +1,10 @@
 name: CI
 
+# Runs on every push and PR to main/master.
+# All three jobs must pass — configure branch protection to require them
+# before merging: Settings → Branches → "Require status checks to pass".
+# Required checks: "C++ (ubuntu-latest)", "C++ (macos-latest)", "JS SDK", "Integration Tests"
+
 on:
   push:
     branches: [main, master]
@@ -7,7 +12,7 @@ on:
     branches: [main, master]
 
 jobs:
-  # ─── C++ build and unit tests ───────────────────────────────────────────────
+  # ─── C++ build + unit tests ──────────────────────────────────────────────────
   cpp:
     name: C++ (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -19,6 +24,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Install protobuf system-wide so find_package(protobuf CONFIG) succeeds
+      # and FetchContent is skipped. FetchContent builds protobuf as an in-tree
+      # target, which CMake cannot include in an install(EXPORT) set — only
+      # imported targets (from find_package) are allowed as transitive deps.
+      - name: Install protobuf (macOS)
+        if: runner.os == 'macOS'
+        run: brew install protobuf
+
+      - name: Install protobuf (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libprotobuf-dev protobuf-compiler
+
       - name: Configure
         run: >
           cmake -B build
@@ -28,11 +45,13 @@ jobs:
       - name: Build
         run: cmake --build build --parallel
 
-      - name: Test
+      # Unit tests: transport, protocol, RPC, SDK layers (98 tests total).
+      # ctest exits non-zero on any failure, failing the job.
+      - name: Unit tests
         working-directory: build
         run: ctest --output-on-failure
 
-  # ─── JavaScript SDK unit tests ───────────────────────────────────────────────
+  # ─── JS SDK build + unit tests ───────────────────────────────────────────────
   js-sdk:
     name: JS SDK
     runs-on: ubuntu-latest
@@ -50,15 +69,18 @@ jobs:
         working-directory: sdk/js
         run: npm ci
 
-      - name: Build
+      - name: Build TypeScript
         working-directory: sdk/js
         run: npm run build
 
-      - name: Test
+      # Unit tests: transport, framing, envelope codec, RPC client, RPC server.
+      - name: Unit tests
         working-directory: sdk/js
         run: npm test
 
   # ─── Cross-language integration tests ────────────────────────────────────────
+  # Spawns both the C++ echo_server binary and the JS echo-server via ts-node,
+  # then runs the same 6 scenarios against both to verify wire-protocol compat.
   integration:
     name: Integration Tests
     runs-on: ubuntu-latest
@@ -67,7 +89,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Build the C++ echo_server binary (needed by integration test helper)
+      - name: Install protobuf
+        run: sudo apt-get install -y libprotobuf-dev protobuf-compiler
+
       - name: Configure and build C++
         run: |
           cmake -B build \
@@ -79,7 +103,7 @@ jobs:
         with:
           node-version: '20'
 
-      # JS SDK must be installed — ts-node runs the JS echo server
+      # JS SDK must be installed — ts-node runs the JS echo server in tests
       - name: Install JS SDK dependencies
         working-directory: sdk/js
         run: npm ci

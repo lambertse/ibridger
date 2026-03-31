@@ -34,6 +34,7 @@ if(IBRIDGER_BUILD_TESTS)
     GIT_SHALLOW    TRUE
   )
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(INSTALL_GTEST           OFF CACHE BOOL "" FORCE)  # don't pollute cmake --install
   FetchContent_MakeAvailable(googletest)
   include(GoogleTest)
 endif()

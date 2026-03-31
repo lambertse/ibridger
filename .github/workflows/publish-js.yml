@@ -1,0 +1,55 @@
+name: Publish JS SDK
+
+# Triggered by a version tag: git tag v0.2.0 && git push --tags
+#
+# Uses npm Trusted Publishing (OIDC) — no NPM_TOKEN secret required.
+# One-time setup on npmjs.com (already done):
+#   npmjs.com → @lambertse/ibridger-sdk → Settings → Trusted Publishers → Add GitHub Actions
+#   org: lambertse, repo: iBridger, workflow: publish-js.yml
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  id-token: write  # Required: allows GitHub to generate the OIDC token for npm
+
+jobs:
+  publish:
+    name: npm publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+          cache-dependency-path: sdk/js/package-lock.json
+
+      - name: Install dependencies
+        working-directory: sdk/js
+        run: npm ci
+
+      - name: Run tests
+        working-directory: sdk/js
+        run: npm test
+
+      - name: Build
+        working-directory: sdk/js
+        run: npm run build
+
+      # Sync package.json version to the git tag (strips leading 'v')
+      - name: Set version from tag
+        working-directory: sdk/js
+        run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
+
+      # --provenance: attaches cryptographic proof of which workflow built this package
+      # --access public: required for scoped packages (@ibridger/sdk) — they default to private
+      # No NODE_AUTH_TOKEN needed — npm exchanges the OIDC token automatically
+      - name: Publish to npm
+        working-directory: sdk/js
+        run: npm publish --provenance --access public

@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+# iBridger requires protobuf at consumer's find_package time.
+find_dependency(protobuf CONFIG REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/ibridgerTargets.cmake")
+
+check_required_components(ibridger)

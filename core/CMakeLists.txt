@@ -15,13 +15,22 @@ add_library(ibridger_core STATIC
 )
 
 target_include_directories(ibridger_core PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(ibridger_core PUBLIC ibridger_proto)
 
 # Namespaced alias so consumers can write target_link_libraries(... ibridger::core)
 add_library(ibridger::core ALIAS ibridger_core)
+
+# ─── Install rules ────────────────────────────────────────────────────────────
+install(TARGETS ibridger_core EXPORT ibridger-targets
+  ARCHIVE DESTINATION lib
+)
+install(DIRECTORY include/ibridger
+  DESTINATION include
+)
 
 if(IBRIDGER_BUILD_TESTS)
   add_subdirectory(tests)

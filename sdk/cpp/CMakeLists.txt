@@ -6,13 +6,22 @@ add_library(ibridger_sdk_cpp STATIC
 )
 
 target_include_directories(ibridger_sdk_cpp PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(ibridger_sdk_cpp PUBLIC ibridger::core)
 
 # Namespaced alias
 add_library(ibridger::sdk::cpp ALIAS ibridger_sdk_cpp)
+
+# ─── Install rules ────────────────────────────────────────────────────────────
+install(TARGETS ibridger_sdk_cpp EXPORT ibridger-targets
+  ARCHIVE DESTINATION lib
+)
+install(DIRECTORY include/ibridger
+  DESTINATION include
+)
 
 # ─── Tests ────────────────────────────────────────────────────────────────────
 

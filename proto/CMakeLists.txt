@@ -24,4 +24,15 @@ protobuf_generate(
 # Generated headers land in the build tree; expose that directory.
 target_include_directories(ibridger_proto PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<INSTALL_INTERFACE:include>
+)
+
+# ─── Install rules ────────────────────────────────────────────────────────────
+install(TARGETS ibridger_proto EXPORT ibridger-targets
+  ARCHIVE DESTINATION lib
+)
+# Install proto-generated headers (they live in the build tree)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ibridger
+  DESTINATION include
+  FILES_MATCHING PATTERN "*.h"
 )
