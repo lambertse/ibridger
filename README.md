@@ -100,7 +100,7 @@ int main() {
 }
 ```
 
-**Client** — connect with `ClientStub` and call with typed proto messages:
+**Client** — connect with `ClientStub` and call with typed proto messages. Pass a `ReconnectConfig` to auto-reconnect if the server restarts:
 
 ```cpp
 #include "ibridger/sdk/client_stub.h"
@@ -109,8 +109,18 @@ int main() {
 int main() {
     ibridger::rpc::ClientConfig cfg;
     cfg.endpoint = "/tmp/my.sock";
-    ibridger::sdk::ClientStub stub(cfg);
 
+    // Optional: reconnect automatically if the server restarts.
+    ibridger::rpc::ReconnectConfig rc;
+    rc.base_delay   = std::chrono::milliseconds(200);
+    rc.max_delay    = std::chrono::milliseconds(10'000);
+    rc.on_reconnect = [] { std::cout << "reconnected\n"; };
+    cfg.reconnect   = rc;
+
+    // Optional: react to unexpected disconnection.
+    cfg.on_disconnect = [] { std::cerr << "server lost\n"; };
+
+    ibridger::sdk::ClientStub stub(cfg);
     stub.connect();
 
     GreetRequest req;
@@ -149,6 +159,41 @@ npx ts-node examples/echo-client.ts /tmp/ibridger.sock
 const pong = await client.ping();
 console.log(pong.serverId, Number(pong.timestampMs));
 ```
+
+## Resilient connections
+
+Both SDKs detect server disconnection immediately and expose hooks to react to it.
+
+### JavaScript / TypeScript
+
+```typescript
+// Notified when the server dies — isConnected becomes false instantly.
+client.onDisconnect = () => console.log('server lost');
+
+// Auto-reconnect: call() blocks with exponential backoff until the server recovers.
+const client = new IBridgerClient(
+  { endpoint: '/tmp/my.sock' },
+  { baseDelayMs: 200, maxDelayMs: 10_000, maxAttempts: Infinity,
+    onReconnect: () => console.log('reconnected') },
+);
+```
+
+### C++
+
+```cpp
+cfg.on_disconnect = [] { std::cerr << "server lost\n"; };
+
+ibridger::rpc::ReconnectConfig rc;
+rc.base_delay   = std::chrono::milliseconds(200);
+rc.max_delay    = std::chrono::milliseconds(10'000);
+rc.max_attempts = -1;   // -1 = unlimited
+rc.on_reconnect = [] { std::cout << "reconnected\n"; };
+cfg.reconnect   = rc;
+```
+
+When `reconnect` is set, `call()` / `client.call()` blocks transparently while the server is down — the caller sees no error as long as the server recovers within the backoff budget. `on_disconnect` / `onDisconnect` fires regardless of whether auto-reconnect is enabled.
+
+> **Retry safety:** only the `send()` path is retried (server never received the request). If `recv()` fails the call returns an error — the server may have already processed it.
 
 ## Architecture
 

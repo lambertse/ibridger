@@ -94,16 +94,20 @@ new IBridgerServer(config: ServerConfig)
 ### `IBridgerClient`
 
 ```typescript
-new IBridgerClient(config: { endpoint: string; defaultTimeout?: number })
+new IBridgerClient(
+  config: { endpoint: string; defaultTimeout?: number },
+  reconnect?: ReconnectOptions,   // optional — enables auto-reconnect
+)
 ```
 
-| Method | Description |
+| Method / Property | Description |
 |---|---|
 | `connect()` | Open connection to the server. |
 | `disconnect()` | Close the connection. |
 | `call(service, method, request, ReqType, RespType, options?)` | Make a typed RPC call. Throws `RpcError` on non-OK status, `TimeoutError` on timeout. |
 | `ping(options?)` | Convenience shorthand for the built-in Ping health check. |
-| `isConnected` | `boolean` getter. |
+| `isConnected` | `boolean` getter — accurately reflects transport state. |
+| `onDisconnect` | Optional `() => void` callback fired when the server closes the connection unexpectedly. |
 
 **`CallOptions`**
 
@@ -112,6 +116,32 @@ interface CallOptions {
   timeout?: number;           // ms, defaults to 30 000
   metadata?: Record<string, string>;
 }
+```
+
+**`ReconnectOptions`**
+
+```typescript
+interface ReconnectOptions {
+  maxAttempts?: number;       // default: Infinity
+  baseDelayMs?: number;       // default: 200 — doubles each attempt
+  maxDelayMs?: number;        // default: 10 000
+  onReconnect?: () => void;   // fired after each successful reconnect
+}
+```
+
+When `ReconnectOptions` is provided, `call()` automatically waits for the server to come back instead of throwing immediately. `onDisconnect` fires when the transport drops regardless of whether auto-reconnect is enabled.
+
+```typescript
+// Without reconnect — call() throws 'Not connected' if server dies.
+const client = new IBridgerClient({ endpoint: '/tmp/my.sock' });
+
+// With reconnect — call() blocks with backoff until server recovers.
+const client = new IBridgerClient(
+  { endpoint: '/tmp/my.sock' },
+  { baseDelayMs: 200, maxDelayMs: 10_000, onReconnect: () => console.log('back!') },
+);
+await client.connect();
+client.onDisconnect = () => console.log('server lost');
 ```
 
 ### `typedMethod`
