@@ -117,7 +117,7 @@ export class IBridgerClient {
   ): Promise<TResp> {
     if (!this.codec && this.reconnectOpts) await this.waitForReconnect();
     if (!this.codec) throw new Error('Not connected');
-    if (this.callInFlight) throw new Error('A call is already in flight');
+    if (this.callInFlight) throw new Error('A call is already in flight. method: ' + method);
 
     const payload = Buffer.from(reqType.encode(request).finish());
     const id = this.nextRequestId++;

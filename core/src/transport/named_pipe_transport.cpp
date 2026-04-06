@@ -1,7 +1,5 @@
 #include "ibridger/transport/named_pipe_transport.h"
 
-#ifdef _WIN32
-
 #include <windows.h>
 
 namespace ibridger {
@@ -100,5 +98,3 @@ void NamedPipeTransport::close() {
 
 }  // namespace transport
 }  // namespace ibridger
-
-#endif  // _WIN32

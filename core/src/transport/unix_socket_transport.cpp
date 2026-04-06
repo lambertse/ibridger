@@ -1,15 +1,13 @@
 #include "ibridger/transport/unix_socket_transport.h"
 
-#include "ibridger/common/logger.h"
-
-#if defined(__unix__) || defined(__APPLE__)
-
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
 
 #include <cerrno>
 #include <cstring>
+
+#include "ibridger/common/logger.h"
 
 namespace ibridger {
 namespace transport {
@@ -174,5 +172,3 @@ void UnixSocketTransport::close() {
 
 }  // namespace transport
 }  // namespace ibridger
-
-#endif  // defined(__unix__) || defined(__APPLE__)

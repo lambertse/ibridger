@@ -6,8 +6,6 @@
 #include "ibridger/transport/connection.h"
 #include "ibridger/transport/transport.h"
 
-#if defined(__unix__) || defined(__APPLE__)
-
 namespace ibridger {
 namespace transport {
 
@@ -58,5 +56,3 @@ class UnixSocketTransport : public ITransport {
 
 }  // namespace transport
 }  // namespace ibridger
-
-#endif  // defined(__unix__) || defined(__APPLE__)

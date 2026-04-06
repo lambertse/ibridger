@@ -1,9 +1,23 @@
+set(PLATFORM_SPECIFIC_SOURCES)
+
+if(WIN32)
+  list(APPEND PLATFORM_SPECIFIC_SOURCES
+    src/transport/named_pipe_transport.cpp
+  )
+elseif(APPLE)
+  list(APPEND PLATFORM_SPECIFIC_SOURCES
+    src/transport/unix_socket_transport.cpp
+  )
+else()
+  list(APPEND PLATFORM_SPECIFIC_SOURCES
+    src/transport/unix_socket_transport.cpp
+  )
+endif()
+
 add_library(ibridger_core STATIC
   src/ibridger.cpp
   src/common/logger.cpp
   src/common/error.cpp
-  src/transport/unix_socket_transport.cpp
-  src/transport/named_pipe_transport.cpp
   src/transport/transport_factory.cpp
   src/protocol/framing.cpp
   src/protocol/envelope_codec.cpp
@@ -12,6 +26,7 @@ add_library(ibridger_core STATIC
   src/rpc/server.cpp
   src/rpc/client.cpp
   src/rpc/builtin/ping_service.cpp
+  ${PLATFORM_SPECIFIC_SOURCES}
 )
 
 target_include_directories(ibridger_core PUBLIC
