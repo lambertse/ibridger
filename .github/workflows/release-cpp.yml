@@ -1,44 +1,36 @@
 name: Release C++ SDK
-
 # Triggered by the same version tag as publish-js.yml.
 # Builds platform-specific binary packages, creates a GitHub Release,
 # and uploads the archives as release assets.
-
 on:
   push:
     tags:
       - 'v*'
-
 jobs:
   build:
     name: Package (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-#       os: [ubuntu-latest, macos-latest] - Disable linux currently
-        os: [macos-latest]
-
-
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-
       - name: Install protobuf (macOS)
         if: runner.os == 'macOS'
         run: brew install protobuf
-
+      - name: Install protobuf (Windows)
+        if: runner.os == 'Windows'
+        run: choco install protoc
       - name: Configure
         run: >
           cmake -B build
           -DCMAKE_BUILD_TYPE=Release
           -DIBRIDGER_BUILD_EXAMPLES=ON
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
-
       - name: Build
         run: cmake --build build --parallel 4 --config Release
-
       - name: Install
         run: cmake --install build --config Release
-
       # Archive layout: ibridger-v0.2.0-linux-x64.tar.gz
       #   include/ibridger/   — public headers + proto-generated headers
       #   lib/                — libibridger_core.a, libibridger_sdk_cpp.a
@@ -51,40 +43,36 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             PLATFORM="linux-x64"
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            PLATFORM="windows-x64"
           else
             ARCH=$(uname -m)
             PLATFORM="macos-${ARCH}"
           fi
           echo "name=ibridger-${TAG}-${PLATFORM}" >> "$GITHUB_OUTPUT"
-
       - name: Create archive
         run: >
           tar -czf ${{ steps.archive.outputs.name }}.tar.gz
           -C ${{ github.workspace }}/install .
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.archive.outputs.name }}
           path: ${{ steps.archive.outputs.name }}.tar.gz
           retention-days: 1
-
   release:
     name: Create GitHub Release
     runs-on: macos-latest
     needs: build
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
           merge-multiple: true
-
       - name: Create release and upload assets
         env:
           GH_TOKEN: ${{ github.token }}

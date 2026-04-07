@@ -1,3 +1,4 @@
+#if defined(__unix__) || defined(__APPLE__)
 #include "ibridger/transport/unix_socket_transport.h"
 
 #include <sys/socket.h>
@@ -172,3 +173,5 @@ void UnixSocketTransport::close() {
 
 }  // namespace transport
 }  // namespace ibridger
+
+#endif  // defined(__unix__) || defined(__APPLE__)

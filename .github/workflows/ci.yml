@@ -1,16 +1,13 @@
 name: CI
-
 # Runs on every push and PR to main/master.
 # All three jobs must pass — configure branch protection to require them
 # before merging: Settings → Branches → "Require status checks to pass".
-# Required checks: "C++ (ubuntu-latest)", "C++ (macos-latest)", "JS SDK", "Integration Tests"
-
+# Required checks: "C++ (ubuntu-latest)", "C++ (macos-latest)", "C++ (windows-latest)", "JS SDK", "Integration Tests"
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   # ─── C++ build + unit tests ──────────────────────────────────────────────────
   cpp:
@@ -19,17 +16,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-
       # macOS: install protobuf via Homebrew — fast, find_package finds it,
       # FetchContent is skipped entirely.
       - name: Install protobuf (macOS)
         if: runner.os == 'macOS'
         run: brew install protobuf
-
+      - name: Install protobuf (Windows)
+        if: runner.os == 'Windows'
+        run: choco install protoc
       # Ubuntu: apt-installed protobuf may not satisfy find_package(protobuf CONFIG),
       # so FetchContent may still run. Cache the built artifacts so the
       # 30-minute abseil+protobuf compile only happens on the very first run.
@@ -40,48 +37,38 @@ jobs:
           path: build/_deps
           key: ${{ runner.os }}-deps-${{ hashFiles('cmake/Dependencies.cmake') }}
           restore-keys: ${{ runner.os }}-deps-
-
       - name: Configure
         run: >
           cmake -B build
           -DIBRIDGER_BUILD_TESTS=ON
           -DIBRIDGER_BUILD_EXAMPLES=ON
-
       - name: Build
-        run: cmake --build build --parallel 4
-
+        run: cmake --build build --parallel 4 --config Release
       - name: Unit tests
         if: runner.os != 'Linux' # Hard code, testing with Linux later
         working-directory: build
-        run: ctest -j8 --output-on-failure --timeout 600
-
+        run: ctest -j8 --output-on-failure --timeout 600 --build-config Release
   # ─── JS SDK build + unit tests ───────────────────────────────────────────────
   js-sdk:
     name: JS SDK
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
           cache-dependency-path: sdk/js/package-lock.json
-
       - name: Install dependencies
         working-directory: sdk/js
         run: npm ci
-
       - name: Build TypeScript
         working-directory: sdk/js
         run: npm run build
-
       # Unit tests: transport, framing, envelope codec, RPC client, RPC server.
       - name: Unit tests
         working-directory: sdk/js
         run: npm test
-
   # ─── Cross-language integration tests ────────────────────────────────────────
   # Spawns both the C++ echo_server binary and the JS echo-server via ts-node,
   # then runs the same 6 scenarios against both to verify wire-protocol compat.
@@ -89,33 +76,26 @@ jobs:
     name: Integration Tests
     runs-on: macos-latest
     needs: [cpp, js-sdk]
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Install protobuf (macOS)
         run: brew install protobuf
-
       - name: Configure and build C++
         run: |
           cmake -B build \
             -DIBRIDGER_BUILD_TESTS=ON \
             -DIBRIDGER_BUILD_EXAMPLES=ON
           cmake --build build --parallel 4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       # JS SDK must be installed — ts-node runs the JS echo server in tests
       - name: Install JS SDK dependencies
         working-directory: sdk/js
         run: npm ci
-
       - name: Install integration test dependencies
         working-directory: tests/integration
         run: npm ci
-
       - name: Run integration tests
         working-directory: tests/integration
         run: npm test

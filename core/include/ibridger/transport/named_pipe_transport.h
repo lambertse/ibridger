@@ -12,7 +12,7 @@ namespace transport {
 /// A connected Named Pipe endpoint (Windows).
 class NamedPipeConnection : public IConnection {
  public:
-  // TODO: accept a HANDLE and an id
+  NamedPipeConnection();
   explicit NamedPipeConnection(void* handle, ConnectionId id);
   ~NamedPipeConnection() override;
 
