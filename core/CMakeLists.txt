@@ -39,3 +39,7 @@ endif()
 if(IBRIDGER_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
+
+if(IBRIDGER_BUILD_BENCHMARKS)
+  add_subdirectory(benchmarks)
+endif()

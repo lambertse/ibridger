@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(IBRIDGER_BUILD_TESTS "Build unit tests" OFF)
 option(IBRIDGER_BUILD_EXAMPLES "Build example applications" OFF)
+option(IBRIDGER_BUILD_BENCHMARKS "Build performance benchmarks" OFF)
 
 if(IBRIDGER_BUILD_TESTS)
   enable_testing()

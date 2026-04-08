@@ -1,4 +1,5 @@
 build/
+build_rel/
 node_modules/
 *.pb.cc
 *.pb.h

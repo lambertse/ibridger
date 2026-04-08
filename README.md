@@ -208,6 +208,39 @@ Four-layer stack (bottom-up):
 
 Wire format: `[4-byte big-endian length][protobuf Envelope]`, max 16 MB per frame. Documented in [`docs/WIRE_PROTOCOL.md`](docs/WIRE_PROTOCOL.md).
 
+## Benchmarks
+
+### Build and run
+
+```bash
+cmake -B build -DIBRIDGER_BUILD_BENCHMARKS=ON
+cmake --build build --target ibridger_benchmarks
+./build/core/benchmarks/ibridger_benchmarks
+```
+
+Output JSON for CI storage:
+
+```bash
+./build/core/benchmarks/ibridger_benchmarks \
+  --benchmark_format=json --benchmark_out=benchmark_results.json
+```
+
+### Representative results (Apple M-series, macOS, Unix socket, Debug build)
+
+chmark | Payload | Wall time/op | Throughput |
+|---|---|---|---|
+| PingLatency | — | ~16 μs | ~133 k calls/s |
+| EchoLatency | 64 B | ~15 μs | ~130 k calls/s |
+| EchoLatency | 1 KB | ~17 μs | ~122 k calls/s |
+| EchoLatency | 64 KB | ~140 μs | ~14 k calls/s |
+| EchoLatency | 256 KB | ~456 μs | ~4.3 k calls/s |
+| SequentialThroughput | 64 B | ~16 μs | ~130 k calls/s |
+| ConcurrentThroughput | 64 B, 1 thread | ~16 μs | ~128 k calls/s |
+| ConcurrentThroughput | 64 B, 4 threads | ~33 μs | ~60 k calls/s (agg.) |
+| ConnectionSetup | — | ~12 μs | ~90 k conn/s |
+
+> Numbers from a Debug build; a Release build (`-DCMAKE_BUILD_TYPE=Release`) will be significantly faster. Run on your own hardware for accurate figures.
+
 ## Building from source
 
 ### C++ (CMake 3.20+, C++17)
