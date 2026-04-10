@@ -5,7 +5,7 @@ name: CI
 # Required checks: "C++ (ubuntu-latest)", "C++ (macos-latest)", "C++ (windows-latest)", "JS SDK", "Integration Tests"
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, ci-cd-test]
   pull_request:
     branches: [main, master]
 jobs:
