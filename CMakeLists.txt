@@ -23,7 +23,6 @@ endif()
 include(cmake/Dependencies.cmake)
 
 add_subdirectory(proto)
-add_subdirectory(core)
 add_subdirectory(sdk/cpp)
 
 # ─── CMake package install ────────────────────────────────────────────────────

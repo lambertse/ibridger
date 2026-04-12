@@ -1,5 +1,8 @@
 option(IBRIDGER_BUILD_SHARED "Build shared library" OFF)
 option(IBRIDGER_BUILD_TESTS "Build unit tests" OFF)
+option(IBRIDGER_BUILD_BENCHMARKS "Build performance benchmarks" OFF)
+
+add_subdirectory(core)
 
 if(IBRIDGER_BUILD_SHARED)
   set(LIB_TYPE SHARED)

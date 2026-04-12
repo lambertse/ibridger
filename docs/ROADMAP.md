@@ -135,9 +135,9 @@ User code
 **Goal:** Establish directory layout, root CMakeLists.txt, .gitignore.
 
 **Create:**
-- `CMakeLists.txt` — `project(iBridger)`, C++17, `option(IBRIDGER_BUILD_TESTS)`, `option(IBRIDGER_BUILD_EXAMPLES)`, `add_subdirectory` stubs for `core/` and `sdk/cpp/`
+- `CMakeLists.txt` — `project(iBridger)`, C++17, `option(IBRIDGER_BUILD_TESTS)`, `option(IBRIDGER_BUILD_EXAMPLES)`, `add_subdirectory` for `proto/` and `sdk/cpp/`
 - `.gitignore` — build/, node_modules/, *.pb.cc, *.pb.h, .cache/
-- `core/CMakeLists.txt` — skeleton library target
+- `sdk/cpp/core/CMakeLists.txt` — skeleton library target
 - `sdk/cpp/CMakeLists.txt` — skeleton
 - `sdk/js/package.json` — minimal with name, version, scripts
 
@@ -155,8 +155,8 @@ User code
 - `cmake/Dependencies.cmake` — FetchContent declarations for:
   - `protobuf` v28.x (`protobuf_BUILD_TESTS OFF`, `protobuf_BUILD_EXAMPLES OFF`)
   - `googletest` v1.15.x
-- `core/tests/CMakeLists.txt` — test executable setup
-- `core/tests/sanity_test.cpp`:
+- `sdk/cpp/core/tests/CMakeLists.txt` — test executable setup
+- `sdk/cpp/core/tests/sanity_test.cpp`:
   ```cpp
   #include <gtest/gtest.h>
   TEST(Sanity, CompilerWorks) { EXPECT_EQ(1 + 1, 2); }
@@ -214,7 +214,7 @@ User code
 - `proto/CMakeLists.txt` — `protobuf_generate_cpp`, produces `ibridger_proto` library target
 
 **Tests:**
-- `core/tests/proto_test.cpp` — instantiate Envelope, set all fields, serialize to string, parse back, assert field equality.
+- `sdk/cpp/core/tests/proto_test.cpp` — instantiate Envelope, set all fields, serialize to string, parse back, assert field equality.
 
 **Verify:** Proto library compiles, test passes.
 
@@ -227,7 +227,7 @@ User code
 **Goal:** Define abstract `ITransport` and `IConnection` interfaces.
 
 **Create:**
-- `core/include/ibridger/transport/transport.h`:
+- `sdk/cpp/core/include/ibridger/transport/transport.h`:
   ```cpp
   class ITransport {
   public:
@@ -238,7 +238,7 @@ User code
     virtual void close() = 0;
   };
   ```
-- `core/include/ibridger/transport/connection.h`:
+- `sdk/cpp/core/include/ibridger/transport/connection.h`:
   ```cpp
   class IConnection {
   public:
@@ -250,7 +250,7 @@ User code
     virtual uint64_t id() const = 0;
   };
   ```
-- `core/include/ibridger/transport/types.h` — `ConnectionId` typedef, `TransportError` enum, custom `std::error_category`
+- `sdk/cpp/core/include/ibridger/transport/types.h` — `ConnectionId` typedef, `TransportError` enum, custom `std::error_category`
 
 **Tests:** Compile-only verification (no implementation yet).
 
@@ -263,8 +263,8 @@ User code
 **Goal:** Concrete `ITransport` and `IConnection` for Unix Domain Sockets.
 
 **Create:**
-- `core/include/ibridger/transport/unix_socket_transport.h`
-- `core/src/transport/unix_socket_transport.cpp`
+- `sdk/cpp/core/include/ibridger/transport/unix_socket_transport.h`
+- `sdk/cpp/core/src/transport/unix_socket_transport.cpp`
 
 **Implementation notes:**
 - POSIX: `socket(AF_UNIX, SOCK_STREAM)`, `bind`, `listen`, `accept`, `connect`
@@ -273,7 +273,7 @@ User code
 - Auto-delete socket file on close
 - Use `/tmp/ibridger_XXXXXX` temp paths for tests
 
-**Tests** (`core/tests/transport/unix_socket_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/transport/unix_socket_test.cpp`):
 - Connect and accept handshake
 - Send/recv small payload roundtrip
 - Send/recv 1 MB payload (partial write handling)
@@ -289,15 +289,15 @@ User code
 **Goal:** Named Pipe transport for Windows. On Unix, returns `not_supported`.
 
 **Create:**
-- `core/include/ibridger/transport/named_pipe_transport.h`
-- `core/src/transport/named_pipe_transport.cpp`
+- `sdk/cpp/core/include/ibridger/transport/named_pipe_transport.h`
+- `sdk/cpp/core/src/transport/named_pipe_transport.cpp`
 
 **Implementation notes:**
 - Windows: `CreateNamedPipe`, `ConnectNamedPipe`, `CreateFile`, `ReadFile`, `WriteFile`
 - Unix: All methods return `std::errc::not_supported`
 - Guard with `#ifdef _WIN32`
 
-**Tests** (`core/tests/transport/named_pipe_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/transport/named_pipe_test.cpp`):
 - On Unix: verify `listen()`/`connect()` return `not_supported`
 - On Windows: same test suite as Unix socket
 
@@ -310,8 +310,8 @@ User code
 **Goal:** Factory that selects the appropriate transport for the current platform.
 
 **Create:**
-- `core/include/ibridger/transport/transport_factory.h`
-- `core/src/transport/transport_factory.cpp`
+- `sdk/cpp/core/include/ibridger/transport/transport_factory.h`
+- `sdk/cpp/core/src/transport/transport_factory.cpp`
 
 **Design:**
 ```cpp
@@ -324,7 +324,7 @@ public:
 ```
 `kAuto` selects Unix socket on macOS/Linux, Named pipe on Windows.
 
-**Tests** (`core/tests/transport/transport_factory_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/transport/transport_factory_test.cpp`):
 - `kAuto` produces correct concrete type (check via `dynamic_cast`)
 - Explicit type selection works
 - Unsupported type on platform returns error
@@ -338,8 +338,8 @@ public:
 **Goal:** Length-prefixed framing over raw `IConnection`.
 
 **Create:**
-- `core/include/ibridger/protocol/framing.h`
-- `core/src/protocol/framing.cpp`
+- `sdk/cpp/core/include/ibridger/protocol/framing.h`
+- `sdk/cpp/core/src/protocol/framing.cpp`
 
 **Design:**
 ```cpp
@@ -357,7 +357,7 @@ private:
 - Max frame size: 16 MB (reject larger with error)
 - Zero-length frames are valid (heartbeat use case)
 
-**Tests** (`core/tests/protocol/framing_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/protocol/framing_test.cpp`):
 - Single frame roundtrip
 - Empty frame roundtrip
 - Multiple sequential frames
@@ -373,8 +373,8 @@ private:
 **Goal:** Serialize/deserialize protobuf `Envelope` messages over framed connections.
 
 **Create:**
-- `core/include/ibridger/protocol/envelope_codec.h`
-- `core/src/protocol/envelope_codec.cpp`
+- `sdk/cpp/core/include/ibridger/protocol/envelope_codec.h`
+- `sdk/cpp/core/src/protocol/envelope_codec.cpp`
 
 **Design:**
 ```cpp
@@ -386,7 +386,7 @@ public:
 };
 ```
 
-**Tests** (`core/tests/protocol/envelope_codec_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/protocol/envelope_codec_test.cpp`):
 - Envelope roundtrip (all field types populated)
 - Request/response pair with correlated `request_id`
 - Corrupted payload handling (returns parse error, doesn't crash)
@@ -401,7 +401,7 @@ public:
 **Goal:** Server-side registry mapping service names to handler implementations.
 
 **Create:**
-- `core/include/ibridger/rpc/service.h`:
+- `sdk/cpp/core/include/ibridger/rpc/service.h`:
   ```cpp
   using MethodHandler = std::function<std::pair<std::string, std::error_code>(const std::string& payload)>;
 
@@ -413,15 +413,15 @@ public:
     virtual MethodHandler get_method(const std::string& method_name) const = 0;
   };
   ```
-- `core/include/ibridger/rpc/service_registry.h`
-- `core/src/rpc/service_registry.cpp`
+- `sdk/cpp/core/include/ibridger/rpc/service_registry.h`
+- `sdk/cpp/core/src/rpc/service_registry.cpp`
 
 **Design:**
 - `ServiceRegistry::register_service(shared_ptr<IService>)` — returns error on duplicate name
 - `ServiceRegistry::find_service(name)` — returns `shared_ptr<IService>` or nullptr
 - `ServiceRegistry::list_services()` — returns all registered `ServiceDescriptor`s
 
-**Tests** (`core/tests/rpc/service_registry_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/rpc/service_registry_test.cpp`):
 - Register and find service
 - Find method on service, invoke handler
 - Service not found returns nullptr
@@ -437,8 +437,8 @@ public:
 **Goal:** Routes incoming `Envelope` to correct service/method, produces response `Envelope`.
 
 **Create:**
-- `core/include/ibridger/rpc/dispatcher.h`
-- `core/src/rpc/dispatcher.cpp`
+- `sdk/cpp/core/include/ibridger/rpc/dispatcher.h`
+- `sdk/cpp/core/src/rpc/dispatcher.cpp`
 
 **Design:**
 ```cpp
@@ -454,7 +454,7 @@ public:
 - Returns `INTERNAL` if handler throws or returns error
 - Response `payload` contains handler's serialized response bytes
 
-**Tests** (`core/tests/rpc/dispatcher_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/rpc/dispatcher_test.cpp`):
 - Successful dispatch returns handler output
 - Unknown service returns NOT_FOUND envelope
 - Unknown method returns NOT_FOUND envelope
@@ -470,8 +470,8 @@ public:
 **Goal:** Tie transport + protocol + dispatcher into a working server.
 
 **Create:**
-- `core/include/ibridger/rpc/server.h`
-- `core/src/rpc/server.cpp`
+- `sdk/cpp/core/include/ibridger/rpc/server.h`
+- `sdk/cpp/core/src/rpc/server.cpp`
 
 **Design:**
 ```cpp
@@ -496,7 +496,7 @@ public:
 - Handler thread loops: `recv Envelope → dispatch → send response`
 - Graceful stop: close listener, drain active connections
 
-**Tests** (`core/tests/rpc/server_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/rpc/server_test.cpp`):
 - Start/stop lifecycle (no crash, clean shutdown)
 - Single request roundtrip with raw socket client
 - Multiple concurrent connections (3 clients, 10 requests each)
@@ -512,8 +512,8 @@ public:
 **Goal:** Client-side engine that sends requests and correlates responses.
 
 **Create:**
-- `core/include/ibridger/rpc/client.h`
-- `core/src/rpc/client.cpp`
+- `sdk/cpp/core/include/ibridger/rpc/client.h`
+- `sdk/cpp/core/src/rpc/client.cpp`
 
 **Design:**
 ```cpp
@@ -542,7 +542,7 @@ public:
 - Mutex-serialized calls (one outstanding request at a time, initially)
 - Validates response `request_id` matches sent request
 
-**Tests** (`core/tests/rpc/client_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/rpc/client_test.cpp`):
 - Connect/disconnect lifecycle
 - Successful call roundtrip (integration with server in background thread)
 - NOT_FOUND error propagation
@@ -558,15 +558,15 @@ public:
 **Goal:** Reference service implementation + health check facility.
 
 **Create:**
-- `core/include/ibridger/rpc/builtin/ping_service.h`
-- `core/src/rpc/builtin/ping_service.cpp`
+- `sdk/cpp/core/include/ibridger/rpc/builtin/ping_service.h`
+- `sdk/cpp/core/src/rpc/builtin/ping_service.cpp`
 
 **Design:**
 - Service name: `"ibridger.Ping"`
 - Method: `"Ping"` — takes `Ping` proto, returns `Pong` with server_id and timestamp
 - Auto-registered on all servers by default (can disable via `ServerConfig::register_builtins = false`)
 
-**Tests** (`core/tests/rpc/builtin/ping_service_test.cpp`):
+**Tests** (`sdk/cpp/core/tests/rpc/builtin/ping_service_test.cpp`):
 - Unit test: direct handler invocation with serialized Ping, verify Pong fields
 - Integration test: full client→server roundtrip
 - Verify timestamp is recent (within 1 second)
@@ -580,7 +580,7 @@ public:
 **Goal:** Single `ibridger::core` CMake target and convenience header.
 
 **Create/Update:**
-- `core/include/ibridger/ibridger.h`:
+- `sdk/cpp/core/include/ibridger/ibridger.h`:
   ```cpp
   #pragma once
   // ibridger core — convenience header
@@ -594,7 +594,7 @@ public:
   #include "ibridger/rpc/service.h"
   #include "ibridger/rpc/builtin/ping_service.h"
   ```
-- Update `core/CMakeLists.txt` — produces `ibridger::core` target with proper include dirs and linked deps
+- Update `sdk/cpp/core/CMakeLists.txt` — produces `ibridger::core` target with proper include dirs and linked deps
 
 **Tests:**
 - Compile test using only `#include <ibridger/ibridger.h>` — verify all symbols accessible
@@ -903,7 +903,7 @@ public:
 **Goal:** Pluggable logger, semantic custom error codes, wire protocol constants, and robustness improvements.
 
 **Create:**
-- `core/include/ibridger/common/logger.h`:
+- `sdk/cpp/core/include/ibridger/common/logger.h`:
   ```cpp
   enum class LogLevel { DEBUG, INFO, WARN, ERROR };
   using LogCallback = std::function<void(LogLevel, const std::string&)>;
@@ -915,9 +915,9 @@ public:
     static void log(LogLevel level, const std::string& msg);
   };
   ```
-- `core/include/ibridger/common/error.h` — `ibridger::common::Error` enum + `ibridger_category()` replacing all `std::errc` usage in core
-- `core/src/common/logger.cpp`
-- `core/src/common/error.cpp`
+- `sdk/cpp/core/include/ibridger/common/error.h` — `ibridger::common::Error` enum + `ibridger_category()` replacing all `std::errc` usage in core
+- `sdk/cpp/core/src/common/logger.cpp`
+- `sdk/cpp/core/src/common/error.cpp`
 - `proto/ibridger/constants.proto` (Option B) — `WireConstant` enum with `MAX_FRAME_SIZE = 16777216` and `DEFAULT_TIMEOUT_MS = 30000` as proto-sourced shared constants
 - `docs/WIRE_PROTOCOL.md` (Option A) — complete behavioural wire protocol specification covering framing format, Envelope field contract, request ID rules, status codes, Ping service contract, and error handling
 
@@ -928,8 +928,8 @@ public:
 - All `std::errc` usages replaced with `ibridger::common::Error` codes (semantic domain match)
 
 **Tests:**
-- `core/tests/common/logger_test.cpp` — custom callback receives messages, level filtering works
-- `core/tests/common/error_test.cpp` — all 11 error codes have non-empty messages, category differs from std
+- `sdk/cpp/core/tests/common/logger_test.cpp` — custom callback receives messages, level filtering works
+- `sdk/cpp/core/tests/common/error_test.cpp` — all 11 error codes have non-empty messages, category differs from std
 
 **Depends on:** Phase 15. **Parallelizable with Phases 16-23.**
 

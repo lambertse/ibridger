@@ -18,17 +18,18 @@ The library provides:
 
 ### CMake integration
 
-Benchmarks live under `core/benchmarks/` and are built only when `-DIBRIDGER_BUILD_BENCHMARKS=ON` is passed:
+Benchmarks live under `sdk/cpp/core/benchmarks/` and are built only when `-DIBRIDGER_BUILD_BENCHMARKS=ON` is passed:
 
 ```
-CMakeLists.txt                  ← IBRIDGER_BUILD_BENCHMARKS option
-cmake/Dependencies.cmake        ← FetchContent for google/benchmark v1.9.1
-core/CMakeLists.txt             ← add_subdirectory(benchmarks) guard
-core/benchmarks/CMakeLists.txt  ← ibridger_benchmarks executable
-core/benchmarks/unix_socket_rpc.cpp
+CMakeLists.txt                      ← IBRIDGER_BUILD_BENCHMARKS option
+cmake/Dependencies.cmake            ← FetchContent for google/benchmark v1.9.1
+sdk/cpp/CMakeLists.txt              ← add_subdirectory(core) and IBRIDGER_BUILD_BENCHMARKS guard
+sdk/cpp/core/CMakeLists.txt         ← add_subdirectory(benchmarks) guard
+sdk/cpp/core/benchmarks/CMakeLists.txt  ← ibridger_benchmarks executable
+sdk/cpp/core/benchmarks/unix_socket_rpc.cpp
 ```
 
-The benchmark executable links against `ibridger_core` and `benchmark::benchmark_main`. It reuses `core/tests/test_transport_pair.h` for the `make_endpoint()` / `cleanup_endpoint()` helpers (platform-native Unix socket path on macOS/Linux; Named Pipe path on Windows).
+The benchmark executable links against `ibridger_core` and `benchmark::benchmark_main`. It reuses `sdk/cpp/core/tests/test_transport_pair.h` for the `make_endpoint()` / `cleanup_endpoint()` helpers (platform-native Unix socket path on macOS/Linux; Named Pipe path on Windows).
 
 ### Two benchmark styles
 
@@ -142,16 +143,16 @@ cmake --build build --target ibridger_benchmarks
 
 ```bash
 # All benchmarks
-./build/core/benchmarks/ibridger_benchmarks
+./build/sdk/cpp/core/benchmarks/ibridger_benchmarks
 
 # Single benchmark by name
-./build/core/benchmarks/ibridger_benchmarks --benchmark_filter=EchoLatency
+./build/sdk/cpp/core/benchmarks/ibridger_benchmarks --benchmark_filter=EchoLatency
 
 # Force a minimum run time (default is auto)
-./build/core/benchmarks/ibridger_benchmarks --benchmark_min_time=2s
+./build/sdk/cpp/core/benchmarks/ibridger_benchmarks --benchmark_min_time=2s
 
 # JSON output for CI storage
-./build/core/benchmarks/ibridger_benchmarks \
+./build/sdk/cpp/core/benchmarks/ibridger_benchmarks \
   --benchmark_format=json \
   --benchmark_out=results.json
 ```
@@ -179,4 +180,4 @@ For latency benchmarks, **Time** is the most relevant column. For throughput ben
 2. Call `benchmark::DoNotOptimize(result)` on any value computed inside the loop to prevent the compiler from eliminating it.
 3. Call `state.SetBytesProcessed` or `state.SetItemsProcessed` after the loop so the framework emits the derived throughput columns.
 4. Use `state.SkipWithError("msg")` (not `ASSERT`) to surface setup failures — `ASSERT` aborts the process; `SkipWithError` records the failure and moves to the next benchmark.
-5. Register the benchmark in the same `.cpp` file; add the source file to `core/benchmarks/CMakeLists.txt` if it is a new file.
+5. Register the benchmark in the same `.cpp` file; add the source file to `sdk/cpp/core/benchmarks/CMakeLists.txt` if it is a new file.
